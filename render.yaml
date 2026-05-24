@@ -1,6 +1,6 @@
 services:
   # 1. PostgreSQL Database
-  - type: pgo
+  - type: postgres
     name: petstore-db
     plan: free
 
