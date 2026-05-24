@@ -12,10 +12,18 @@ services:
     region: ohio
     rootDir: backend
     envVars:
-      - key: DB_URL
+      - key: DB_HOST
         fromDatabase:
           name: petstore-db
-          property: jdbcConnectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: petstore-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: petstore-db
+          property: database
       - key: DB_USERNAME
         fromDatabase:
           name: petstore-db
