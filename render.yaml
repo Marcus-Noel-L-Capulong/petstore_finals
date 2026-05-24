@@ -1,8 +1,9 @@
-services:
+databases:
   # 1. PostgreSQL Database
-  - type: postgres
-    name: petstore-db
+  - name: petstore-db
     plan: free
+
+services:
 
   # 2. Spring Boot Backend
   - type: web
