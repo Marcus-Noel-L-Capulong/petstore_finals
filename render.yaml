@@ -4,7 +4,6 @@ databases:
     plan: free
 
 services:
-
   # 2. Spring Boot Backend
   - type: web
     name: petstore-backend
@@ -16,10 +15,20 @@ services:
       - key: DB_URL
         fromDatabase:
           name: petstore-db
-          property: connectionString
+          property: jdbcConnectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: petstore-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: petstore-db
+          property: password
+      - key: DB_DRIVER
+        value: "org.postgresql.Driver"
       - key: PORT
         value: "8080"
-    
+
   # 3. React Frontend
   - type: web
     name: petstore-frontend
