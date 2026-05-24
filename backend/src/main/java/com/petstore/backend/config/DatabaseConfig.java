@@ -2,7 +2,6 @@ package com.petstore.backend.config;
 
 import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,8 +11,9 @@ import java.net.URI;
 public class DatabaseConfig {
 
     @Bean
-    public DataSource dataSource(DataSourceProperties properties) {
+    public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
+        HikariDataSource ds = new HikariDataSource();
 
         if (databaseUrl != null && !databaseUrl.isEmpty()) {
             // Render provides DATABASE_URL in format: postgresql://user:pass@host:port/dbname
@@ -24,23 +24,22 @@ public class DatabaseConfig {
                         + (uri.getPort() > 0 ? ":" + uri.getPort() : "")
                         + uri.getPath();
                 String[] userInfo = uri.getUserInfo().split(":");
-                String username = userInfo[0];
-                String password = userInfo.length > 1 ? userInfo[1] : "";
-
-                HikariDataSource ds = new HikariDataSource();
+                
                 ds.setJdbcUrl(jdbcUrl);
-                ds.setUsername(username);
-                ds.setPassword(password);
+                ds.setUsername(userInfo[0]);
+                ds.setPassword(userInfo.length > 1 ? userInfo[1] : "");
                 ds.setDriverClassName("org.postgresql.Driver");
-                return ds;
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse DATABASE_URL: " + e.getMessage(), e);
             }
+        } else {
+            // Local dev: use H2 in-memory database
+            ds.setJdbcUrl("jdbc:h2:mem:petstore;DB_CLOSE_DELAY=-1");
+            ds.setUsername("sa");
+            ds.setPassword("");
+            ds.setDriverClassName("org.h2.Driver");
         }
 
-        // Fallback: use application.yml properties (for local dev with H2)
-        return properties.initializeDataSourceBuilder()
-                .type(HikariDataSource.class)
-                .build();
+        return ds;
     }
 }
